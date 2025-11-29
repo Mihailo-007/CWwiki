@@ -9,19 +9,29 @@ app.post("/summary", async (req, res) => {
   const { text } = req.body;
 
   try {
-    const response = await fetch("https://api.ollama.com/v1/completions", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      },
       body: JSON.stringify({
-        model: "gemma3:4b",
-        prompt: `Стисло перекажи текст: ${text}`
+        model: "google/gemma-2-9b-it",
+        messages: [
+          {
+            role: "user",
+            content: `Стисло перекажи текст українською:\n\n${text}`,
+          },
+        ],
       }),
     });
 
     const data = await response.json();
+    const summary = data.choices?.[0]?.message?.content || "Помилка";
 
-    res.json({ summary: data.choices[0].text });
+    res.json({ summary });
   } catch (error) {
+    console.error("SERVER ERROR:", error);
     res.status(500).json({ error: error.toString() });
   }
 });

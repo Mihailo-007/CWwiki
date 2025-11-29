@@ -1,29 +1,18 @@
 export async function getBattleSummary(text: string) {
   try {
-    const response = await fetch("https://cwwiki.onrender.com/generate", {
+    const response = await fetch("https://cwwiki.onrender.com/summary", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gemma3:4b",
-        prompt: `Скороти текст:\n\n${text}`
-      })
+      body: JSON.stringify({ text }),
     });
 
-    const reader = response.body!.getReader();
-    let output = "";
+    const data = await response.json();
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = new TextDecoder().decode(value);
-
-      try {
-        const json = JSON.parse(chunk);
-        if (json.response) output += json.response;
-      } catch {}
+    if (data.summary) {
+      return data.summary.trim();
+    } else {
+      return "Помилка з'єднання з ШІ.";
     }
-
-    return output.trim();
   } catch (err) {
     return "Помилка з'єднання з ШІ.";
   }
