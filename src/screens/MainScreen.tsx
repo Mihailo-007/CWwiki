@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
-export default function MainScreen({ navigation }: any) {
+export default function MainScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Битви Війни Клонів</Text>
@@ -21,13 +21,6 @@ export default function MainScreen({ navigation }: any) {
           Додаток з інформацією про важливі битви Війн Клонів
         </Text>
       </View>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("Home")}
-      >
-        <Text style={styles.buttonText}>Перейти до роботи</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -54,7 +47,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#2a72ff",
-    marginBottom: 30
   },
 
   label: {
@@ -69,17 +61,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 6
   },
-
-  button: {
-    backgroundColor: "#2a72ff",
-    padding: 14,
-    borderRadius: 10,
-  },
-
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    textAlign: "center",
-    fontWeight: "bold"
-  }
 });
