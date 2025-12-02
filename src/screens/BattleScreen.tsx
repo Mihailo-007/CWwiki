@@ -8,7 +8,7 @@ export default function BattleScreen({ route }: any) {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const battles: any = {
+    const battles: any = {
     umbara: {
       title: "Битва за Умбару",
       shortDescription:
@@ -213,15 +213,37 @@ export default function BattleScreen({ route }: any) {
 
   return (
     <ScrollView style={styles.container}>
+
       {battle.images.main && (
-        <Image
-          source={battle.images.main}
-          style={styles.mainImage}
-          resizeMode="cover"
-        />
+        <Image source={battle.images.main} style={styles.mainImage} resizeMode="cover" />
       )}
 
       <Text style={styles.title}>{battle.title}</Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          setSummary("");
+          setLoading(true);
+
+          await getBattleSummary(
+            battle.description,
+            (chunk) => setSummary((prev) => prev + chunk)
+          );
+
+          setLoading(false);
+        }}
+      >
+        <Text style={styles.buttonText}>Отримати короткий підсумок (ШІ)</Text>
+      </TouchableOpacity>
+
+      {loading && <Text style={styles.loading}>Створення...</Text>}
+
+      {summary.length > 0 && (
+        <View style={styles.summaryBox}>
+          <Text style={styles.summaryText}>{summary}</Text>
+        </View>
+      )}
 
       <Text style={styles.label}>Опис:</Text>
       <Text style={styles.text}>{battle.description}</Text>
@@ -231,76 +253,20 @@ export default function BattleScreen({ route }: any) {
         <Text key={index} style={styles.cloneItem}>• {char}</Text>
       ))}
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={async () => {
-          setSummary("");
-          setLoading(true);
-
-          const text = await getBattleSummary(battle.description);
-          setSummary(text);
-
-          setLoading(false);
-        }}
-      >
-        <Text style={styles.buttonText}>Короткий переказ (ШІ)</Text>
-      </TouchableOpacity>
-
-      {loading && (
-        <Text style={styles.loading}>Створення...</Text>
-      )}
-
-      {summary.length > 0 && (
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryText}>{summary}</Text>
-        </View>
-      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f0f0f", padding: 16 },
-
-  mainImage: {
-    width: "100%",
-    height: 230,
-    borderRadius: 12,
-    marginBottom: 16
-  },
-
+  mainImage: { width: "100%", height: 230, borderRadius: 12, marginBottom: 16 },
   title: { color: "#fff", fontSize: 26, fontWeight: "bold", marginBottom: 16 },
-
   label: { color: "#aaa", fontSize: 18, marginTop: 12, marginBottom: 4 },
-
   text: { color: "#eee", fontSize: 16, lineHeight: 22 },
-
   cloneItem: { color: "#fff", fontSize: 16, marginLeft: 8, marginVertical: 2 },
-
-  button: { backgroundColor: "#2a72ff", padding: 14, borderRadius: 10, marginTop: 20 },
-
+  button: { backgroundColor: "#2a72ff", padding: 14, borderRadius: 10, marginBottom: 20 },
   buttonText: { color: "#fff", fontSize: 16, textAlign: "center", fontWeight: "bold" },
-
-  loading: {
-    color: "#7fa4ff",
-    marginTop: 20,
-    fontSize: 16,
-    fontStyle: "italic",
-    textAlign: "center"
-  },
-
-  summaryBox: {
-    backgroundColor: "#1b1b1b",
-    padding: 14,
-    borderRadius: 10,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: "#2a72ff"
-  },
-
-  summaryText: {
-    color: "#fff",
-    fontSize: 16,
-    lineHeight: 22
-  }
+  loading: { color: "#7fa4ff", marginTop: 10, fontSize: 16, fontStyle: "italic", textAlign: "center" },
+  summaryBox: { backgroundColor: "#1b1b1b", padding: 14, borderRadius: 10, marginTop: 20, borderWidth: 1, borderColor: "#2a72ff" },
+  summaryText: { color: "#fff", fontSize: 16, lineHeight: 22 },
 });
