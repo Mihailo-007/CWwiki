@@ -20,16 +20,36 @@ app.post("/summary", async (req, res) => {
         messages: [
           {
             role: "user",
-            content: `Стисло перекажи текст українською:\n\n${text}`,
+            content: `
+Зроби НАДКOРОТКИЙ висновок українською.
+Формат: тільки 1 речення, максимум 12–15 слів.
+Заборонено пояснювати, деталізувати, додавати імена, події чи контекст.
+Лише одне дуже стиснене речення.
+
+Текст:
+${text}
+
+Висновок:
+            `,
           },
         ],
       }),
     });
 
     const data = await response.json();
-    const summary = data.choices?.[0]?.message?.content || "Помилка";
+
+    let summary = data.choices?.[0]?.message?.content || "Помилка";
+
+    summary = summary
+      .replace(/\n/g, " ")
+      .replace(/[#*_\-]/g, "")
+      .trim()
+      .split(" ")
+      .slice(0, 15)
+      .join(" ");
 
     res.json({ summary });
+
   } catch (error) {
     console.error("SERVER ERROR:", error);
     res.status(500).json({ error: error.toString() });
