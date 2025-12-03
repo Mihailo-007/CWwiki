@@ -14,7 +14,17 @@ export default function App() {
 
         <Stack.Screen name="Tabs" component={BottomTabs} />
 
-        <Stack.Screen name="Battle" component={BattleScreen} />
+        <Stack.Screen
+  name="Battle"
+  component={BattleScreen}
+  options={{
+    headerShown: true,
+    headerTitle: '',
+    headerTransparent: true,
+    headerTintColor: '#fff'
+  }}
+/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );

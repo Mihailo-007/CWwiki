@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { getBattleSummary } from "../api/ollama";
+import { StatusBar, Platform } from "react-native";
+
 
 export default function BattleScreen({ route }: any) {
   const { id } = route.params;
@@ -209,63 +211,72 @@ export default function BattleScreen({ route }: any) {
     }
   };
 
- const battle = battles[id];
+const battle = battles[id];
 
-  return (
-    <ScrollView style={styles.container}>
+return (
+  <ScrollView style={styles.container}>
 
-      {battle.images.main && (
-        <Image source={battle.images.main} style={styles.mainImage} resizeMode="cover" />
-      )}
+    {battle.images.main && (
+      <Image
+        source={battle.images.main}
+        style={styles.mainImage}
+        resizeMode="cover"
+      />
+    )}
 
-      <Text style={styles.title}>{battle.title}</Text>
+    <Text style={styles.title}>{battle.title}</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={async () => {
-          setSummary("");
-          setLoading(true);
+    <TouchableOpacity
+      style={styles.button}
+      onPress={async () => {
+        setSummary("");
+        setLoading(true);
 
-          const result = await getBattleSummary(battle.description);
+        const result = await getBattleSummary(battle.description);
+        setSummary(result);
+        setLoading(false);
+      }}
+    >
+      <Text style={styles.buttonText}>Отримати короткий підсумок (ШІ)</Text>
+    </TouchableOpacity>
 
-          setSummary(result);
-          setLoading(false);
-        }}
-      >
-        <Text style={styles.buttonText}>Отримати короткий підсумок (ШІ)</Text>
-      </TouchableOpacity>
+    {(loading || summary.length > 0) && (
+      <View style={styles.summaryBox}>
+        {loading ? (
+          <Text style={styles.loading}>Створення...</Text>
+        ) : (
+          <Text style={styles.summaryText}>{summary}</Text>
+        )}
+      </View>
+    )}
 
-      {(loading || summary.length > 0) && (
-        <View style={styles.summaryBox}>
-          {loading ? (
-            <Text style={styles.loading}>Створення...</Text>
-          ) : (
-            <Text style={styles.summaryText}>{summary}</Text>
-          )}
-        </View>
-      )}
+    <Text style={styles.label}>Опис:</Text>
+    <Text style={styles.text}>{battle.description}</Text>
 
+    <Text style={styles.label}>Головні персонажі:</Text>
+    {battle.characters.map((char: string, index: number) => (
+      <Text key={index} style={styles.cloneItem}>• {char}</Text>
+    ))}
 
-      <Text style={styles.label}>Опис:</Text>
-      <Text style={styles.text}>{battle.description}</Text>
+  </ScrollView>
+);
 
-      <Text style={styles.label}>Головні персонажі:</Text>
-      {battle.characters.map((char: string, index: number) => (
-        <Text key={index} style={styles.cloneItem}>• {char}</Text>
-      ))}
-
-    </ScrollView>
-  );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f0f0f", padding: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: "#0f0f0f",
+    padding: 16
+  },
 
   mainImage: {
     width: "100%",
     height: 230,
     borderRadius: 12,
-    marginBottom: 16
+    marginBottom: 16,
+
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight + 10 : 30,
   },
 
   title: {
@@ -312,9 +323,23 @@ const styles = StyleSheet.create({
     lineHeight: 22
   },
 
-  label: { color: "#aaa", fontSize: 18, marginTop: 12, marginBottom: 4 },
+  label: {
+    color: "#aaa",
+    fontSize: 18,
+    marginTop: 12,
+    marginBottom: 4
+  },
 
-  text: { color: "#eee", fontSize: 16, lineHeight: 22 },
+  text: {
+    color: "#eee",
+    fontSize: 16,
+    lineHeight: 22
+  },
 
-  cloneItem: { color: "#fff", fontSize: 16, marginLeft: 8, marginVertical: 2 }
+  cloneItem: {
+    color: "#fff",
+    fontSize: 16,
+    marginLeft: 8,
+    marginVertical: 2
+  }
 });
