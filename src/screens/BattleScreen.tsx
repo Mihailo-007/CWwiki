@@ -214,7 +214,11 @@ export default function BattleScreen({ route }: any) {
 const battle = battles[id];
 
 return (
-  <ScrollView style={styles.container}>
+  <ScrollView
+  style={styles.container}
+  contentContainerStyle={{ paddingBottom: 80 }}
+>
+
 
     {battle.images.main && (
       <Image
